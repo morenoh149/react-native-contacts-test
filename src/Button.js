@@ -15,9 +15,10 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#444',
     padding: 20,
-    left: 10,
-    right: 10,
     alignItems: 'center',
+    flex: 1,
+    height: 50,
+    margin: 5,
   },
   text: {
     textAlign: 'center',
