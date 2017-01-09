@@ -1,13 +1,19 @@
 "use strict";
 
-import React, {Component, View, Text, TouchableOpacity, StyleSheet, PropTypes} from "react-native";
+import React, {Component} from "react";
+import {View, Text, TouchableOpacity, StyleSheet, PropTypes} from "react-native";
 
 export default class Button extends Component {
+
+  static propTypes = {
+    text: React.PropTypes.string.isRequired,
+    onPress: React.PropTypes.func.isRequired,
+  };
 
   render() {
     return (
       <TouchableOpacity style={styles.container} onPress={this.props.onPress}>
-        <Text style={styles.text}>{this.props.text}</Text>
+          <Text style={styles.text}>{this.props.text}</Text>
       </TouchableOpacity>
     )
   }
@@ -16,9 +22,8 @@ export default class Button extends Component {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#444',
-    padding: 20,
     alignItems: 'center',
-    flex: 1,
+    justifyContent: 'center',
     height: 50,
     margin: 5,
   },

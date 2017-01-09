@@ -1,6 +1,7 @@
 "use strict";
 
-import React, {Component, View, Text, Platform, StyleSheet} from "react-native";
+import React, {Component} from "react";
+import {View, Text, Platform, StyleSheet} from "react-native";
 import Button from "./Button";
 import invariant from "invariant";
 import _ from "lodash";
