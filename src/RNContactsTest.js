@@ -11,11 +11,20 @@ const PREFIX = 'ReactNativeContacts__';
 
 export default class RNContactsTest extends Component {
 
+  //todo: test getAllWithoutPhotos
+  //todo: test getPhotoById
+  //todo: add / update addresses
+  //todo: add / update photo
+  //todo: load test
+
   getAll() {
-    console.log('getall');
     Contacts.getAll((err, data) => {
-      if (err) throw err;
-      console.log('getAll:', err, data)
+      if (err)
+        throw err;
+
+      for(let item of data) {
+        console.log('getAll:', item)
+      }
     })
   }
 
@@ -24,8 +33,10 @@ export default class RNContactsTest extends Component {
       const originalRecord = _.cloneDeep(data[0]);
 
       const pendingRecord = _.cloneDeep(data[0]);
-      pendingRecord.familyName = (originalRecord.familyName + Math.floor(Math.random() * 999999)).slice(0, 20);
+      pendingRecord.familyName = (originalRecord.familyName + RNContactsTest.rand()).slice(0, 20);
       pendingRecord.emailAddresses.push({email: 'addedFromRNContacts@example.com', type: 'work'});
+
+      //todo - update more fields
 
       Contacts.updateContact(pendingRecord, (err, data) => {
         if (err) throw err;
@@ -45,11 +56,18 @@ export default class RNContactsTest extends Component {
 
   addContact() {
     const newContact = {
-      givenName: PREFIX + Math.floor(Math.random() * 99999999),
-      familyName: PREFIX + Math.floor(Math.random() * 99999999),
+      givenName: PREFIX + "givenName" + RNContactsTest.rand(),
+      familyName: PREFIX + "familyName" + RNContactsTest.rand(),
+      middleName: PREFIX + "middleName" + RNContactsTest.rand(),
+      jobTitle: PREFIX + "jobTitle" + RNContactsTest.rand(),
+      company: PREFIX + "company" + RNContactsTest.rand(),
       emailAddresses: [
-        {email: 'fromRNContacts1@example.com', type: 'work'},
-        {email: 'fromRNContacts2@example.com', type: 'personal'}
+        {email: PREFIX + '1@example.com', type: 'work'},
+        {email: PREFIX + '2@example.com', type: 'personal'}
+      ],
+      phoneNumbers: [
+        {number: "11111", label: 'main'},
+        {number: "22222", label: 'mobile'},
       ]
     };
 
@@ -74,7 +92,7 @@ export default class RNContactsTest extends Component {
     Contacts.getAll((err, contactsBefore) => {
       let contactToDelete = _.find(contactsBefore, (contact) => contact.givenName && contact.givenName.indexOf(PREFIX) === 0);
       if (!contactToDelete)
-        contactToDelete = contactsBefore[0];
+        throw new Error("add a contact before calling delete");
 
       console.log('attempting to delete', contactToDelete);
 
@@ -89,6 +107,10 @@ export default class RNContactsTest extends Component {
     })
   }
 
+  static rand() {
+    return Math.floor(Math.random() * 99999999);
+  }
+
   render() {
     return (
       <View>
@@ -96,7 +118,7 @@ export default class RNContactsTest extends Component {
         <Button text="get all contacts" onPress={this.getAll}/>
         <Button text="update contact" onPress={this.updateContact}/>
         <Button text="add contact" onPress={this.addContact}/>
-        <Button text="delet contact" onPress={this.deleteContact}/>
+        <Button text="delete contact" onPress={this.deleteContact}/>
       </View>
     )
   }
