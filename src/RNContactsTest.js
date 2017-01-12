@@ -14,21 +14,20 @@ export default class RNContactsTest extends Component {
   constructor(props) {
     super(props);
     this.addContact = this.addContact.bind(this);
+    this.updateContact = this.updateContact.bind(this);
   }
 
   //todo: add / update addresses
-  //todo: add / update photo
+  //todo: update photo
   //todo: load test
 
   componentWillMount() {
     const self = this;
 
-    RNContactsTest.getPhotosFromCameraRoll(1)
+    RNContactsTest.getPhotosFromCameraRoll(2)
       .then((data) => {
-        const assets = data.edges;
-        assets.forEach((asset) => {
-          self.defaultImage = asset.node.image.uri;
-        });
+        self.defaultImage = data.edges[0].node.image.uri;
+        self.otherImage = data.edges[1].node.image.uri;
       });
   }
 
@@ -60,8 +59,7 @@ export default class RNContactsTest extends Component {
         throw err;
 
       const item = data.filter((item) => item.hasThumbnail)[0];
-      console.log('getPhotoForId:', item);
-      
+
       Contacts.getPhotoForId(item.recordID, (err, icon) => {
         if(err) {
           console.warn("error getting photo", err);
@@ -74,11 +72,15 @@ export default class RNContactsTest extends Component {
 
   updateContact() {
     Contacts.getAll((err, data) => {
-      const originalRecord = _.cloneDeep(data[0]);
+      const originalRecord = _.find(data, (contact) => contact.givenName && contact.givenName.indexOf(PREFIX) === 0);
+      if (!originalRecord)
+        throw new Error("add a contact before calling delete");
 
-      const pendingRecord = _.cloneDeep(data[0]);
+      const pendingRecord = _.cloneDeep(originalRecord);
       pendingRecord.familyName = (originalRecord.familyName + RNContactsTest.rand()).slice(0, 20);
-      pendingRecord.emailAddresses.push({email: 'addedFromRNContacts@example.com', type: 'work'});
+      pendingRecord.emailAddresses.push({email: 'addedFromRNContacts@example.com', label: 'other'});
+      pendingRecord.phoneNumbers.push({number: "44444", label: 'iPhone'});
+      pendingRecord.thumbnailPath = this.otherImage;//how to test this?
 
       //todo - update more fields
 
@@ -91,8 +93,10 @@ export default class RNContactsTest extends Component {
           console.log('original record:', originalRecord);
           console.log('updated record:', updatedRecord);
 
+          invariant(updatedRecord.familyName !== originalRecord.familyName, 'family name was not updated');
+          invariant(updatedRecord.familyName === pendingRecord.familyName, 'family name was not updated');
           invariant(updatedRecord.emailAddresses.length === originalRecord.emailAddresses.length + 1, 'Email address array is not length one greater than original record');
-          invariant(updatedRecord.familyName === pendingRecord.familyName, 'family name was not updated')
+          invariant(updatedRecord.phoneNumbers.length === originalRecord.phoneNumbers.length + 1, 'Email address array is not length one greater than original record');
         })
       })
     })
@@ -106,12 +110,13 @@ export default class RNContactsTest extends Component {
       jobTitle: PREFIX + "jobTitle" + RNContactsTest.rand(),
       company: PREFIX + "company" + RNContactsTest.rand(),
       emailAddresses: [
-        {email: PREFIX + '1@example.com', type: 'work'},
-        {email: PREFIX + '2@example.com', type: 'personal'}
+        {email: PREFIX + '1@example.com', label: 'work'},
+        {email: PREFIX + '2@example.com', label: 'personal'}
       ],
       phoneNumbers: [
         {number: "11111", label: 'main'},
         {number: "22222", label: 'mobile'},
+        {number: "33333", label: 'home'},
       ],
       thumbnailPath: this.defaultImage
     };
@@ -142,7 +147,7 @@ export default class RNContactsTest extends Component {
 
   deleteContact() {
     Contacts.getAll((err, contactsBefore) => {
-      let contactToDelete = _.find(contactsBefore, (contact) => contact.givenName && contact.givenName.indexOf(PREFIX) === 0);
+      const contactToDelete = _.find(contactsBefore, (contact) => contact.givenName && contact.givenName.indexOf(PREFIX) === 0);
       if (!contactToDelete)
         throw new Error("add a contact before calling delete");
 
