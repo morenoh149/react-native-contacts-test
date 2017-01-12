@@ -156,8 +156,6 @@ export default class RNContactsTest extends Component {
 
     const timer = new Timer();
 
-    let toDelete;
-
     console.log("Adding", LOAD_TEST_SIZE, "test contacts");
 
     this._addContacts(LOAD_TEST_SIZE)
@@ -165,7 +163,11 @@ export default class RNContactsTest extends Component {
         console.log("time to add contacts", timer.printTimeSinceLastCheck());
 
         Contacts.getAllWithoutPhotos((err, data) => {
-          toDelete = data.filter((contact) => contact.givenName && contact.givenName.indexOf(PREFIX) === 0);
+          let toDelete = data.filter((contact) => contact.givenName && contact.givenName.indexOf(PREFIX) === 0);
+
+          if(toDelete.length < LOAD_TEST_SIZE) {
+            console.warn("did not find the expected number of test contacts", toDelete.length, "!==", LOAD_TEST_SIZE);
+          }
 
           console.log("Found", toDelete.length, "test contacts");
 
@@ -211,8 +213,8 @@ export default class RNContactsTest extends Component {
 
     for (let i = 0; i < size; i++) {
       work.push(new Promise(function (fulfill, reject) {
-        Contacts.addContact(self._contact(), () => {
-          console.log("Added contact");
+        Contacts.addContact(self._contact(), (err, res) => {
+          console.log("Added contact", i, res);
           fulfill();
         })
       }));
