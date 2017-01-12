@@ -16,7 +16,6 @@ export default class RNContactsTest extends Component {
     this.addContact = this.addContact.bind(this);
   }
 
-  //todo: test getPhotoById
   //todo: add / update addresses
   //todo: add / update photo
   //todo: load test
@@ -55,6 +54,24 @@ export default class RNContactsTest extends Component {
     })
   }
 
+  getPhotoForId() {
+    Contacts.getAllWithoutPhotos((err, data) => {
+      if (err)
+        throw err;
+
+      const item = data.filter((item) => item.hasThumbnail)[0];
+      console.log('getPhotoForId:', item);
+      
+      Contacts.getPhotoForId(item.recordID, (err, icon) => {
+        if(err) {
+          console.warn("error getting photo", err);
+        } else {
+          console.log("icon", icon);
+        }
+      })
+    })
+  }
+
   updateContact() {
     Contacts.getAll((err, data) => {
       const originalRecord = _.cloneDeep(data[0]);
@@ -82,7 +99,6 @@ export default class RNContactsTest extends Component {
   }
 
   addContact() {
-    console.log("this.defaultImage", this.defaultImage);
     const newContact = {
       givenName: PREFIX + "givenName" + RNContactsTest.rand(),
       familyName: PREFIX + "familyName" + RNContactsTest.rand(),
@@ -174,6 +190,7 @@ export default class RNContactsTest extends Component {
         <Text style={styles.hello}>All results are console.log'ed</Text>
         <Button text="get all contacts" onPress={this.getAll}/>
         <Button text="get all contacts (without photos)" onPress={this.getAllWithoutPhotos}/>
+        <Button text="getPhotoForId" onPress={this.getPhotoForId}/>
         <Button text="update contact" onPress={this.updateContact}/>
         <Button text="add contact" onPress={this.addContact}/>
         <Button text="delete contact" onPress={this.deleteContact}/>
