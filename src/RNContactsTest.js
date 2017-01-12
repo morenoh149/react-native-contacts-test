@@ -28,6 +28,17 @@ export default class RNContactsTest extends Component {
     })
   }
 
+  getAllWithoutPhotos() {
+    Contacts.getAllWithoutPhotos((err, data) => {
+      if (err)
+        throw err;
+
+      for(let item of data) {
+        console.log('getAllWithoutPhotos:', item)
+      }
+    })
+  }
+
   updateContact() {
     Contacts.getAll((err, data) => {
       const originalRecord = _.cloneDeep(data[0]);
@@ -116,6 +127,7 @@ export default class RNContactsTest extends Component {
       <View>
         <Text style={styles.hello}>All results are console.log'ed</Text>
         <Button text="get all contacts" onPress={this.getAll}/>
+        <Button text="get all contacts (without photos)" onPress={this.getAllWithoutPhotos}/>
         <Button text="update contact" onPress={this.updateContact}/>
         <Button text="add contact" onPress={this.addContact}/>
         <Button text="delete contact" onPress={this.deleteContact}/>
