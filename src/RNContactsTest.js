@@ -9,7 +9,7 @@ import Contacts from "react-native-contacts";
 import Timer from "./timer";
 
 const PREFIX = 'ReactNativeContacts__';
-const LOAD_TEST_SIZE = 800;
+const LOAD_TEST_SIZE = 4000;
 
 export default class RNContactsTest extends Component {
 
@@ -108,7 +108,11 @@ export default class RNContactsTest extends Component {
   addContact() {
     const newContact = this._contact();
 
-    Contacts.addContact(newContact, (err, data) => {
+    Contacts.addContact(newContact, (err, addedContact) => {
+      if(!addedContact.recordID) {
+        console.log("Added contact does not have a recordID", addedContact);
+      }
+
       Contacts.getAll((err, records) => {
         const contact = _.find(records, {givenName: newContact.givenName});
 
@@ -122,7 +126,7 @@ export default class RNContactsTest extends Component {
 
           if (Array.isArray(expected))
             invariant(expected.length === actual.length, 'contact values !isEqual for ' + key);
-          else if (key === 'thumbnailPath') {
+          else if (key === 'thumbnailPath' && Platform.OS === 'ios') {
             // thumbnailPath will change intentionally as the source url is saved to the contacts db (and then cached in iOS)
           } else {
             invariant(_.isEqual(expected, actual), 'contact values !isEqual for ' + key + ", expected '" + expected + "' but got '" + actual + "'")
