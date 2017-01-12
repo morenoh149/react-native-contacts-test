@@ -6,8 +6,10 @@ import Button from "./Button";
 import invariant from "invariant";
 import _ from "lodash";
 import Contacts from "react-native-contacts";
+import Timer from "./timer";
 
 const PREFIX = 'ReactNativeContacts__';
+const LOAD_TEST_SIZE = 800;
 
 export default class RNContactsTest extends Component {
 
@@ -15,10 +17,10 @@ export default class RNContactsTest extends Component {
     super(props);
     this.addContact = this.addContact.bind(this);
     this.updateContact = this.updateContact.bind(this);
+    this.loadTest = this.loadTest.bind(this);
   }
 
   //todo: add / update addresses
-  //todo: update photo
   //todo: load test
 
   componentWillMount() {
@@ -36,7 +38,7 @@ export default class RNContactsTest extends Component {
       if (err)
         throw err;
 
-      for(let item of data) {
+      for (let item of data) {
         console.log('getAll:', item)
       }
     })
@@ -47,7 +49,7 @@ export default class RNContactsTest extends Component {
       if (err)
         throw err;
 
-      for(let item of data) {
+      for (let item of data) {
         console.log('getAllWithoutPhotos:', item)
       }
     })
@@ -61,7 +63,7 @@ export default class RNContactsTest extends Component {
       const item = data.filter((item) => item.hasThumbnail)[0];
 
       Contacts.getPhotoForId(item.recordID, (err, icon) => {
-        if(err) {
+        if (err) {
           console.warn("error getting photo", err);
         } else {
           console.log("icon", icon);
@@ -103,23 +105,7 @@ export default class RNContactsTest extends Component {
   }
 
   addContact() {
-    const newContact = {
-      givenName: PREFIX + "givenName" + RNContactsTest.rand(),
-      familyName: PREFIX + "familyName" + RNContactsTest.rand(),
-      middleName: PREFIX + "middleName" + RNContactsTest.rand(),
-      jobTitle: PREFIX + "jobTitle" + RNContactsTest.rand(),
-      company: PREFIX + "company" + RNContactsTest.rand(),
-      emailAddresses: [
-        {email: PREFIX + '1@example.com', label: 'work'},
-        {email: PREFIX + '2@example.com', label: 'personal'}
-      ],
-      phoneNumbers: [
-        {number: "11111", label: 'main'},
-        {number: "22222", label: 'mobile'},
-        {number: "33333", label: 'home'},
-      ],
-      thumbnailPath: this.defaultImage
-    };
+    const newContact = this._contact();
 
     Contacts.addContact(newContact, (err, data) => {
       Contacts.getAll((err, records) => {
@@ -164,6 +150,119 @@ export default class RNContactsTest extends Component {
     })
   }
 
+  loadTest() {
+    console.log("Running load test, please wait...",);
+
+    const timer = new Timer();
+
+    let toDelete;
+
+    console.log("Adding", LOAD_TEST_SIZE, "test contacts");
+
+    this._addContacts(LOAD_TEST_SIZE)
+      .then(() => {
+        console.log("time to add contacts", timer.printTimeSinceLastCheck());
+
+        Contacts.getAllWithoutPhotos((err, data) => {
+          toDelete = data.filter((contact) => contact.givenName && contact.givenName.indexOf(PREFIX) === 0);
+
+          console.log("Found", toDelete.length, "test contacts");
+
+          console.log("Loading", toDelete.length, "contacts");
+
+          this._getAll()
+            .then(() => {
+              console.log("time to getAll", timer.printTimeSinceLastCheck());
+
+              console.log("Loading contacts without photos");
+
+              return this._getAllWithoutPhotos();
+            })
+            .then(() => {
+              console.log("time to getAllWithoutPhotos", timer.printTimeSinceLastCheck());
+
+              console.log("Loading contacts thumbnails");
+
+              return this._getAllThumbnails(toDelete.slice());
+            })
+            .then(() => {
+              console.log("time to get thumbnails", timer.printTimeSinceLastCheck());
+            })
+            .catch((err) => {
+              console.warn("error", err);
+            })
+            .then(() => {
+              console.log("Deleting", toDelete.length, "contacts");
+
+              return this._deleteAll(toDelete);
+            })
+            .then(() => {
+              console.log("time to delete contacts", timer.printTimeSinceLastCheck());
+            });
+        });
+      })
+  }
+
+  _addContacts(size) {
+    const self = this;
+
+    const work = [];
+
+    for (let i = 0; i < size; i++) {
+      work.push(new Promise(function (fulfill, reject) {
+        Contacts.addContact(self._contact(), () => {
+          fulfill();
+        })
+      }));
+    }
+
+    return RNContactsTest._execute(work);
+  }
+
+  _getAll() {
+    return new Promise(function (fulfill, reject) {
+      Contacts.getAll((err, data) => {
+        fulfill();
+      });
+    });
+  }
+
+  _getAllWithoutPhotos() {
+    return new Promise(function (fulfill, reject) {
+      Contacts.getAllWithoutPhotos((err, data) => {
+        fulfill();
+      });
+    });
+  }
+
+  _getAllThumbnails(contacts) {
+    const work = contacts.map((contact) => new Promise(function (fulfill, reject) {
+      Contacts.getPhotoForId(contact.recordID, (err, icon) => {
+        fulfill();
+      });
+    }));
+
+    return RNContactsTest._execute(work);
+  }
+
+  _deleteAll(contacts) {
+    const work = contacts.map((contact) => new Promise(function (fulfill, reject) {
+      Contacts.deleteContact(contact, (err, icon) => {
+        fulfill();
+      });
+    }));
+
+    return RNContactsTest._execute(work);
+  }
+
+  static _execute(promises) {
+    if (promises.length === 0) {
+      return Promise.resolve();
+    } else {
+      return Promise.resolve(promises.pop());
+    }
+  }
+
   static rand() {
     return Math.floor(Math.random() * 99999999);
   }
@@ -189,6 +288,26 @@ export default class RNContactsTest extends Component {
     return CameraRoll.getPhotos(fetchParams);
   }
 
+  _contact() {
+    return {
+      givenName: PREFIX + "givenName" + RNContactsTest.rand(),
+      familyName: PREFIX + "familyName" + RNContactsTest.rand(),
+      middleName: PREFIX + "middleName" + RNContactsTest.rand(),
+      jobTitle: PREFIX + "jobTitle" + RNContactsTest.rand(),
+      company: PREFIX + "company" + RNContactsTest.rand(),
+      emailAddresses: [
+        {email: PREFIX + '1@example.com', label: 'work'},
+        {email: PREFIX + '2@example.com', label: 'personal'}
+      ],
+      phoneNumbers: [
+        {number: "11111", label: 'main'},
+        {number: "22222", label: 'mobile'},
+        {number: "33333", label: 'home'},
+      ],
+      thumbnailPath: this.defaultImage
+    };
+  }
+
   render() {
     return (
       <View>
@@ -196,9 +315,10 @@ export default class RNContactsTest extends Component {
         <Button text="get all contacts" onPress={this.getAll}/>
         <Button text="get all contacts (without photos)" onPress={this.getAllWithoutPhotos}/>
         <Button text="getPhotoForId" onPress={this.getPhotoForId}/>
-        <Button text="update contact" onPress={this.updateContact}/>
         <Button text="add contact" onPress={this.addContact}/>
+        <Button text="update contact" onPress={this.updateContact}/>
         <Button text="delete contact" onPress={this.deleteContact}/>
+        <Button text={"performance test (" + LOAD_TEST_SIZE + " contacts)"} onPress={this.loadTest}/>
       </View>
     )
   }
