@@ -1,7 +1,7 @@
 "use strict";
 
 import React, {Component} from "react";
-import {View, Text, Platform, StyleSheet} from "react-native";
+import {View, Text, Platform, StyleSheet, CameraRoll} from "react-native";
 import Button from "./Button";
 import invariant from "invariant";
 import _ from "lodash";
@@ -11,11 +11,27 @@ const PREFIX = 'ReactNativeContacts__';
 
 export default class RNContactsTest extends Component {
 
-  //todo: test getAllWithoutPhotos
+  constructor(props) {
+    super(props);
+    this.addContact = this.addContact.bind(this);
+  }
+
   //todo: test getPhotoById
   //todo: add / update addresses
   //todo: add / update photo
   //todo: load test
+
+  componentWillMount() {
+    const self = this;
+
+    RNContactsTest.getPhotosFromCameraRoll(1)
+      .then((data) => {
+        const assets = data.edges;
+        assets.forEach((asset) => {
+          self.defaultImage = asset.node.image.uri;
+        });
+      });
+  }
 
   getAll() {
     Contacts.getAll((err, data) => {
@@ -66,6 +82,7 @@ export default class RNContactsTest extends Component {
   }
 
   addContact() {
+    console.log("this.defaultImage", this.defaultImage);
     const newContact = {
       givenName: PREFIX + "givenName" + RNContactsTest.rand(),
       familyName: PREFIX + "familyName" + RNContactsTest.rand(),
@@ -79,7 +96,8 @@ export default class RNContactsTest extends Component {
       phoneNumbers: [
         {number: "11111", label: 'main'},
         {number: "22222", label: 'mobile'},
-      ]
+      ],
+      thumbnailPath: this.defaultImage
     };
 
     Contacts.addContact(newContact, (err, data) => {
@@ -90,10 +108,17 @@ export default class RNContactsTest extends Component {
         console.log('after add:', contact);
 
         _.each(newContact, (value, key) => {
-          if (Array.isArray(newContact[key]))
-            invariant(contact[key].length === newContact[key].length, 'contact values !isEqual for ' + key);
-          else
-            invariant(_.isEqual(contact[key], newContact[key]), 'contact values !isEqual for ' + key)
+
+          const expected = newContact[key];
+          const actual = contact[key];
+
+          if (Array.isArray(expected))
+            invariant(expected.length === actual.length, 'contact values !isEqual for ' + key);
+          else if (key === 'thumbnailPath') {
+            // thumbnailPath will change intentionally as the source url is saved to the contacts db (and then cached in iOS)
+          } else {
+            invariant(_.isEqual(expected, actual), 'contact values !isEqual for ' + key + ", expected '" + expected + "' but got '" + actual + "'")
+          }
         })
       })
     })
@@ -120,6 +145,27 @@ export default class RNContactsTest extends Component {
 
   static rand() {
     return Math.floor(Math.random() * 99999999);
+  }
+
+  static getPhotosFromCameraRoll(count, after) {
+    const fetchParams = {
+      first: count,
+      groupTypes: "SavedPhotos",
+      assetType: "Photos"
+    };
+
+    if (after) {
+      fetchParams.after = after;
+    }
+
+    if (Platform.OS === "android") {
+      // not supported in android
+      delete fetchParams.groupTypes;
+    }
+
+    console.log("Loading photos from camera roll", count);
+
+    return CameraRoll.getPhotos(fetchParams);
   }
 
   render() {
