@@ -15,6 +15,7 @@ export default class RNContactsTest extends Component {
 
   constructor(props) {
     super(props);
+
     this.addContact = this.addContact.bind(this);
     this.updateContact = this.updateContact.bind(this);
     this.loadTest = this.loadTest.bind(this);
@@ -211,6 +212,7 @@ export default class RNContactsTest extends Component {
     for (let i = 0; i < size; i++) {
       work.push(new Promise(function (fulfill, reject) {
         Contacts.addContact(self._contact(), () => {
+          console.log("Added contact");
           fulfill();
         })
       }));
@@ -259,7 +261,10 @@ export default class RNContactsTest extends Component {
     if (promises.length === 0) {
       return Promise.resolve();
     } else {
-      return Promise.resolve(promises.pop());
+      return Promise.resolve(promises.pop())
+        .then(() => {
+          return RNContactsTest._execute(promises);
+        });
     }
   }
 
