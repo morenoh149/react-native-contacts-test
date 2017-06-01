@@ -17,6 +17,7 @@ export default class RNContactsTest extends Component {
     super(props);
 
     this.addContact = this.addContact.bind(this);
+    this.getContactsMatchingString = this.getContactsMatchingString.bind(this);
     this.updateContact = this.updateContact.bind(this);
     this.loadTest = this.loadTest.bind(this);
   }
@@ -132,6 +133,28 @@ export default class RNContactsTest extends Component {
             invariant(_.isEqual(expected, actual), 'contact values !isEqual for ' + key + ", expected '" + expected + "' but got '" + actual + "'")
           }
         })
+      })
+    })
+  }
+
+  getContactsMatchingString() {
+    const newContact = this._contact();
+    console.log('getContactsMatchingString: starting', newContact);
+    Contacts.addContact(newContact, (error, addedContact) => {
+      if(!addedContact.recordID) {
+        console.log("Added contact does not have a recordID", addedContact);
+      }
+      Contacts.getContactsMatchingString(addedContact.familyName, (err, data) => {
+        if (err)
+          throw err;
+        for (let item of data) {
+          console.log('getContactsMatchingString:', item);
+          if (item.familyName === addedContact.familyName) {
+            invariant(_.isEqual(item.familyName, addedContact.familyName), 'contact returned should match contact added');
+            console.log('getContactsMatchingString:', item);
+            break;
+          }
+        }
       })
     })
   }
@@ -325,6 +348,7 @@ export default class RNContactsTest extends Component {
         <Text style={styles.hello}>All results are console.log'ed</Text>
         <Button text="get all contacts" onPress={this.getAll}/>
         <Button text="get all contacts (without photos)" onPress={this.getAllWithoutPhotos}/>
+        <Button text="get contacts matching string" onPress={this.getContactsMatchingString}/>
         <Button text="getPhotoForId" onPress={this.getPhotoForId}/>
         <Button text="add contact" onPress={this.addContact}/>
         <Button text="update contact" onPress={this.updateContact}/>
