@@ -333,6 +333,17 @@ export default class RNContactsTest extends Component {
         {email: PREFIX + '1@example.com', label: 'work'},
         {email: PREFIX + '2@example.com', label: 'personal'}
       ],
+      postalAddresses: [
+        {
+          street: '123 Fake Street',
+          city: 'Sample City',
+          state: 'CA',
+          region: 'CA',
+          postCode: '90210',
+          country: 'USA',
+          label: 'home'
+        }
+      ],
       phoneNumbers: [
         {number: "11111", label: 'main'},
         {number: "22222", label: 'mobile'},
