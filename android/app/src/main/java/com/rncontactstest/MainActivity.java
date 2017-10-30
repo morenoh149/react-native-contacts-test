@@ -1,6 +1,7 @@
 package com.rncontactstest;
 
 import com.facebook.react.ReactActivity;
+import com.rt2zz.reactnativecontacts.ReactNativeContacts;
 
 public class MainActivity extends ReactActivity {
 
@@ -11,5 +12,12 @@ public class MainActivity extends ReactActivity {
     @Override
     protected String getMainComponentName() {
         return "RNContactsTest";
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+        int[] grantResults) {
+        ReactNativeContacts.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

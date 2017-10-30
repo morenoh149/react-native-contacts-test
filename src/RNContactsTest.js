@@ -20,6 +20,7 @@ export default class RNContactsTest extends Component {
     this.getContactsMatchingString = this.getContactsMatchingString.bind(this);
     this.updateContact = this.updateContact.bind(this);
     this.loadTest = this.loadTest.bind(this);
+    this.requestAndroidPermissions = this.requestAndroidPermissions.bind(this);
   }
 
   //todo: add / update addresses
@@ -71,6 +72,16 @@ export default class RNContactsTest extends Component {
           console.log("icon", icon);
         }
       })
+    })
+  }
+
+  requestAndroidPermissions() {
+    Contacts.requestPermission((err, data) => {
+      if (err) {
+        throw err;
+      }
+
+      console.log('Permission Granted', data);      
     })
   }
 
@@ -353,10 +364,18 @@ export default class RNContactsTest extends Component {
     };
   }
 
+  renderAndroidRequestPermissions() {
+    if (Platform.OS === "android") {
+      return <Button text="request android contacts permissions" onPress={this.requestAndroidPermissions}/>
+    }
+    return null;
+  }
+
   render() {
     return (
       <View>
         <Text style={styles.hello}>All results are console.log'ed</Text>
+        {this.renderAndroidRequestPermissions()}
         <Button text="get all contacts" onPress={this.getAll}/>
         <Button text="get all contacts (without photos)" onPress={this.getAllWithoutPhotos}/>
         <Button text="get contacts matching string" onPress={this.getContactsMatchingString}/>

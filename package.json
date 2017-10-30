@@ -11,7 +11,7 @@
 		"react-native": "0.40.0",
 		"invariant": "^2.2.0",
 		"lodash": "^4.0.0",
-		"react-native-contacts": "github:rt2zz/react-native-contacts"
+		"react-native-contacts": "git://github.com/wealthsimple/react-native-contacts.git#99981b4f398ffe7ff3324d738544727d37f8a83a"
 	},
 	"devDependencies": {
 		"babel-jest": "18.0.0",
