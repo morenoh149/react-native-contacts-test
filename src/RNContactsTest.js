@@ -96,6 +96,7 @@ export default class RNContactsTest extends Component {
       pendingRecord.emailAddresses.push({email: 'addedFromRNContacts@example.com', label: 'other'});
       pendingRecord.phoneNumbers.push({number: "44444", label: 'iPhone'});
       pendingRecord.thumbnailPath = this.otherImage;//how to test this?
+      pendingRecord.birthday = { year: 1990, month: 1, day: 28 }
 
       //todo - update more fields
 
@@ -112,6 +113,8 @@ export default class RNContactsTest extends Component {
           invariant(updatedRecord.familyName === pendingRecord.familyName, 'family name was not updated');
           invariant(updatedRecord.emailAddresses.length === originalRecord.emailAddresses.length + 1, 'Email address array is not length one greater than original record');
           invariant(updatedRecord.phoneNumbers.length === originalRecord.phoneNumbers.length + 1, 'Email address array is not length one greater than original record');
+          invariant(updatedRecord.birthday.year !== originalRecord.birthday.year, 'birthday year was not updated');
+          invariant(updatedRecord.birthday.year === pendingRecord.birthday.year, 'birthday year was not updated');
         })
       })
     })
@@ -360,7 +363,12 @@ export default class RNContactsTest extends Component {
         {number: "22222", label: 'mobile'},
         {number: "33333", label: 'home'},
       ],
-      thumbnailPath: this.defaultImage
+      thumbnailPath: this.defaultImage,
+      birthday: {
+        day: 1,
+        month: 0,
+        year: 1987
+      }
     };
   }
 
