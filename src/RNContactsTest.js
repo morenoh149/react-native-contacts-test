@@ -96,7 +96,9 @@ export default class RNContactsTest extends Component {
       pendingRecord.emailAddresses.push({email: 'addedFromRNContacts@example.com', label: 'other'});
       pendingRecord.phoneNumbers.push({number: "44444", label: 'iPhone'});
       pendingRecord.thumbnailPath = this.otherImage;//how to test this?
-      pendingRecord.birthday = { year: 1990, month: 1, day: 28 }
+      pendingRecord.birthday = { year: 1990, month: 1, day: 28 };
+      pendingRecord.note = (originalRecord.note + RNContactsTest.rand()).slice(0, 2);
+      pendingRecord.url = (originalRecord.url + RNContactsTest.rand()).slice(0, 20);
 
       //todo - update more fields
 
@@ -115,6 +117,10 @@ export default class RNContactsTest extends Component {
           invariant(updatedRecord.phoneNumbers.length === originalRecord.phoneNumbers.length + 1, 'Email address array is not length one greater than original record');
           invariant(updatedRecord.birthday.year !== originalRecord.birthday.year, 'birthday year was not updated');
           invariant(updatedRecord.birthday.year === pendingRecord.birthday.year, 'birthday year was not updated');
+          invariant(updatedRecord.note !== originalRecord.note, 'note was not updated');
+          invariant(updatedRecord.note === pendingRecord.note, 'note was not updated');
+          invariant(updatedRecord.url !== originalRecord.url, 'url was not updated');
+          invariant(updatedRecord.url === pendingRecord.url, 'url was not updated');
         })
       })
     })
@@ -368,7 +374,9 @@ export default class RNContactsTest extends Component {
         day: 1,
         month: 0,
         year: 1987
-      }
+      },
+      note: PREFIX + "note" + RNContactsTest.rand(),
+      url: PREFIX + "url" + RNContactsTest.rand(), 
     };
   }
 
