@@ -1,7 +1,7 @@
 "use strict";
 
-import React, {Component} from "react";
-import {View, Text, Platform, StyleSheet, CameraRoll} from "react-native";
+import React, { Component } from "react";
+import { View, Text, Platform, StyleSheet, CameraRoll } from "react-native";
 import Button from "./Button";
 import invariant from "invariant";
 import _ from "lodash";
@@ -29,7 +29,7 @@ export default class RNContactsTest extends Component {
   componentWillMount() {
     const self = this;
 
-    RNContactsTest.getPhotosFromCameraRoll(2)
+    this.getPhotosFromCameraRoll(2)
       .then((data) => {
         self.defaultImage = data.edges[0].node.image.uri;
         self.otherImage = data.edges[1].node.image.uri;
@@ -315,7 +315,7 @@ export default class RNContactsTest extends Component {
     return Math.floor(Math.random() * 99999999);
   }
 
-  static getPhotosFromCameraRoll(count, after) {
+  getPhotosFromCameraRoll = (count, after) => {
     const fetchParams = {
       first: count,
       groupTypes: "SavedPhotos",

@@ -1,15 +1,9 @@
 "use strict";
 
 import React, {Component} from "react";
-import {View, Text, TouchableOpacity, StyleSheet, PropTypes} from "react-native";
+import {View, Text, TouchableOpacity, StyleSheet} from "react-native";
 
 export default class Button extends Component {
-
-  static propTypes = {
-    text: React.PropTypes.string.isRequired,
-    onPress: React.PropTypes.func.isRequired,
-  };
-
   render() {
     return (
       <TouchableOpacity style={styles.container} onPress={this.props.onPress}>
