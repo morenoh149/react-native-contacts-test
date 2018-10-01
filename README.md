@@ -18,11 +18,13 @@ and [Adding Camera Roll to an ios project in React Native](https://www.youtube.c
 * `$ react-native run-android`
 
 ## Testing Changes
-We use this repo to test changes to the main project. Update the dependency to
+We use this repo to test changes in [react-native-contacts](https://github.com/rt2zz/react-native-contacts). To test PRs update the dependency in your copy
 ```js
+// package.json
+
 "react-native-contacts": "username/react-native-contacts#branch-name"
 ```
-and `npm install`. Then follow the instructions above for installing.
+run `npm install`. Then follow regular instructions for installing above.
 
 ## wishlist
 
