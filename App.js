@@ -7,7 +7,7 @@ import Timer from "./timer";
 const PREFIX = 'ReactNativeContacts__';
 const LOAD_TEST_SIZE = 4000;
 
-export default class App extends Component {
+export default class RNContactsTest extends Component {
   state = {
     contacts: [],
   }
@@ -22,18 +22,20 @@ export default class App extends Component {
 */
   }
 
-  getAll() {
+  getAll = () => {
     Contacts.getAll((err, data) => {
       if (err)
         throw err;
 
-      for (let item of data) {
-        console.log('getAll:', item)
+      if (data.length > 50) {
+        console.log(`getAll: ${data.length}`);
+      } else {
+        data.forEach(contact => console.log('getAll:', contact));
       }
     })
   }
 
-  getAllWithoutPhotos() {
+  getAllWithoutPhotos = () => {
     Contacts.getAllWithoutPhotos((err, data) => {
       if (err)
         throw err;
@@ -44,7 +46,7 @@ export default class App extends Component {
     })
   }
 
-  getPhotoForId() {
+  getPhotoForId = () => {
     Contacts.getAllWithoutPhotos((err, data) => {
       if (err)
         throw err;
@@ -61,7 +63,7 @@ export default class App extends Component {
     })
   }
 
-  requestAndroidPermissions() {
+  requestAndroidPermissions = () => {
     Contacts.requestPermission((err, data) => {
       if (err) {
         throw err;
@@ -71,22 +73,30 @@ export default class App extends Component {
     })
   }
 
-  updateContact() {
+  updateContact = () => {
     Contacts.getAll((err, data) => {
-      const originalRecord = _.find(data, (contact) => contact.givenName && contact.givenName.indexOf(PREFIX) === 0);
+      const originalRecord = _.find(data, (contact) =>
+        contact.givenName && contact.givenName.indexOf(PREFIX) === 0);
       if (!originalRecord)
         throw new Error("add a contact before calling delete");
 
       const pendingRecord = _.cloneDeep(originalRecord);
-      pendingRecord.familyName = (originalRecord.familyName + RNContactsTest.rand()).slice(0, 20);
-      pendingRecord.emailAddresses.push({email: 'addedFromRNContacts@example.com', label: 'other'});
+      pendingRecord.familyName = (
+        originalRecord.familyName + RNContactsTest.rand()
+      ).slice(0, 20);
+      pendingRecord.emailAddresses.push({
+        email: 'addedFromRNContacts@example.com',
+        label: 'other'
+      });
       pendingRecord.phoneNumbers.push({number: "44444", label: 'iPhone'});
       pendingRecord.thumbnailPath = this.otherImage;//how to test this?
       pendingRecord.birthday = { year: 1990, month: 1, day: 28 };
-      pendingRecord.note = (originalRecord.note + RNContactsTest.rand()).slice(0, 2);
+      pendingRecord.note = (
+        originalRecord.note + RNContactsTest.rand()
+      ).slice(0, 2);
       pendingRecord.urlAddresses.push({url: 'www.jung.com', label: 'home'});
 
-      //todo - update more fields
+      // TODO - update more fields
 
       Contacts.updateContact(pendingRecord, (err, data) => {
         if (err) throw err;
@@ -111,7 +121,7 @@ export default class App extends Component {
     })
   }
 
-  addContact() {
+  addContact = () => {
     const newContact = this._contact();
 
     Contacts.addContact(newContact, (err, addedContact) => {
@@ -142,7 +152,7 @@ export default class App extends Component {
     })
   }
 
-  getContactsMatchingString() {
+  getContactsMatchingString = () => {
     const newContact = this._contact();
     console.log('getContactsMatchingString: starting', newContact);
     Contacts.addContact(newContact, (error, addedContact) => {
@@ -164,7 +174,7 @@ export default class App extends Component {
     })
   }
 
-  deleteContact() {
+  deleteContact = () => {
     Contacts.getAll((err, contactsBefore) => {
       const contactToDelete = _.find(contactsBefore, (contact) => contact.givenName && contact.givenName.indexOf(PREFIX) === 0);
       if (!contactToDelete)
@@ -183,17 +193,17 @@ export default class App extends Component {
     })
   }
 
-  loadTest() {
+  /*
+   * loadTest loads many contacts into the address book to see what happens.
+   */
+  loadTest = () => {
     console.log("Running load test, please wait...",);
-
     const timer = new Timer();
-
     console.log("Adding", LOAD_TEST_SIZE, "test contacts");
 
     this._addContacts(LOAD_TEST_SIZE)
       .then(() => {
         console.log("time to add contacts", timer.printTimeSinceLastCheck());
-
         Contacts.getAllWithoutPhotos((err, data) => {
           let toDelete = data.filter((contact) => contact.givenName && contact.givenName.indexOf(PREFIX) === 0);
 
@@ -238,14 +248,12 @@ export default class App extends Component {
       })
   }
 
-  _addContacts(size) {
-    const self = this;
-
+  _addContacts = (size) => {
     const work = [];
 
     for (let i = 0; i < size; i++) {
-      work.push(new Promise(function (fulfill, reject) {
-        Contacts.addContact(self._contact(), (err, res) => {
+      work.push(new Promise((fulfill, reject) => {
+        Contacts.addContact(this._contact(), (err, res) => {
           console.log("Added contact", i, res);
           fulfill();
         })
@@ -255,7 +263,7 @@ export default class App extends Component {
     return RNContactsTest._execute(work);
   }
 
-  _getAll() {
+  _getAll = () => {
     return new Promise(function (fulfill, reject) {
       Contacts.getAll((err, data) => {
         fulfill();
@@ -263,7 +271,7 @@ export default class App extends Component {
     });
   }
 
-  _getAllWithoutPhotos() {
+  _getAllWithoutPhotos = () => {
     return new Promise(function (fulfill, reject) {
       Contacts.getAllWithoutPhotos((err, data) => {
         fulfill();
@@ -271,7 +279,7 @@ export default class App extends Component {
     });
   }
 
-  _getAllThumbnails(contacts) {
+  _getAllThumbnails = (contacts) => {
     const work = contacts.map((contact) => new Promise(function (fulfill, reject) {
       Contacts.getPhotoForId(contact.recordID, (err, icon) => {
         fulfill();
@@ -281,7 +289,7 @@ export default class App extends Component {
     return RNContactsTest._execute(work);
   }
 
-  _deleteAll(contacts) {
+  _deleteAll = (contacts) => {
     const work = contacts.map((contact) => new Promise(function (fulfill, reject) {
       Contacts.deleteContact(contact, (err, icon) => {
         fulfill();
@@ -291,7 +299,7 @@ export default class App extends Component {
     return RNContactsTest._execute(work);
   }
 
-  static _execute(promises) {
+  static _execute = (promises) => {
     if (promises.length === 0) {
       return Promise.resolve();
     } else {
@@ -302,7 +310,7 @@ export default class App extends Component {
     }
   }
 
-  static rand() {
+  static rand = () => {
     return Math.floor(Math.random() * 99999999);
   }
 
@@ -327,7 +335,7 @@ export default class App extends Component {
     return CameraRoll.getPhotos(fetchParams);
   }
 
-  _contact() {
+  _contact = () => {
     return {
       givenName: PREFIX + "givenName" + RNContactsTest.rand(),
       familyName: PREFIX + "familyName" + RNContactsTest.rand(),
@@ -368,7 +376,7 @@ export default class App extends Component {
     };
   }
 
-  renderAndroidRequestPermissions() {
+  renderAndroidRequestPermissions = () => {
     if (Platform.OS === "android") {
       return <Button text="request android contacts permissions" onPress={this.requestAndroidPermissions}/>
     }
@@ -401,7 +409,10 @@ export default class App extends Component {
         <Button text="add contact" onPress={this.addContact}/>
         <Button text="update contact" onPress={this.updateContact}/>
         <Button text="delete contact" onPress={this.deleteContact}/>
-        <Button text={"performance test (" + LOAD_TEST_SIZE + " contacts)"} onPress={this.loadTest}/>
+        <Button
+          text={"performance test (" + LOAD_TEST_SIZE + " contacts)"}
+          onPress={this.loadTest}
+        />
       </View>
     );
   }
