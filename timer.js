@@ -18,6 +18,6 @@ export default class Timer {
   }
 
   totalTime() {
-    return (new Date() - this._startTime);
+    return new Date() - this._startTime;
   }
 }

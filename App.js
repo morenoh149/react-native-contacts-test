@@ -1,19 +1,19 @@
-import React, {Component} from 'react';
-import {Alert, Platform, StyleSheet, Text, View} from 'react-native';
+import React, { Component } from "react";
+import { Alert, Platform, StyleSheet, Text, View } from "react-native";
 import Button from "./Button";
 import Contacts from "react-native-contacts";
 import Timer from "./timer";
 
-const PREFIX = 'ReactNativeContacts__';
+const PREFIX = "ReactNativeContacts__";
 const LOAD_TEST_SIZE = 4000;
 
 export default class RNContactsTest extends Component {
   state = {
-    contacts: [],
-  }
+    contacts: []
+  };
 
   componentWillMount() {
-/*
+    /*
     this.getPhotosFromCameraRoll(2)
       .then((data) => {
         self.defaultImage = data.edges[0].node.image.uri;
@@ -24,34 +24,31 @@ export default class RNContactsTest extends Component {
 
   getAll = () => {
     Contacts.getAll((err, data) => {
-      if (err)
-        throw err;
+      if (err) throw err;
 
       if (data.length > 50) {
         console.log(`getAll: ${data.length}`);
       } else {
-        data.forEach(contact => console.log('getAll:', contact));
+        data.forEach(contact => console.log("getAll:", contact));
       }
-    })
-  }
+    });
+  };
 
   getAllWithoutPhotos = () => {
     Contacts.getAllWithoutPhotos((err, data) => {
-      if (err)
-        throw err;
+      if (err) throw err;
 
       for (let item of data) {
-        console.log('getAllWithoutPhotos:', item)
+        console.log("getAllWithoutPhotos:", item);
       }
-    })
-  }
+    });
+  };
 
   getPhotoForId = () => {
     Contacts.getAllWithoutPhotos((err, data) => {
-      if (err)
-        throw err;
+      if (err) throw err;
 
-      const item = data.filter((item) => item.hasThumbnail)[0];
+      const item = data.filter(item => item.hasThumbnail)[0];
 
       Contacts.getPhotoForId(item.recordID, (err, icon) => {
         if (err) {
@@ -59,9 +56,9 @@ export default class RNContactsTest extends Component {
         } else {
           console.log("icon", icon);
         }
-      })
-    })
-  }
+      });
+    });
+  };
 
   requestAndroidPermissions = () => {
     Contacts.requestPermission((err, data) => {
@@ -69,14 +66,16 @@ export default class RNContactsTest extends Component {
         throw err;
       }
 
-      console.log('Permission Granted', data);      
-    })
-  }
+      console.log("Permission Granted", data);
+    });
+  };
 
   updateContact = () => {
     Contacts.getAll((err, data) => {
-      const originalRecord = _.find(data, (contact) =>
-        contact.givenName && contact.givenName.indexOf(PREFIX) === 0);
+      const originalRecord = _.find(
+        data,
+        contact => contact.givenName && contact.givenName.indexOf(PREFIX) === 0
+      );
       if (!originalRecord)
         throw new Error("add a contact before calling delete");
 
@@ -85,16 +84,17 @@ export default class RNContactsTest extends Component {
         originalRecord.familyName + RNContactsTest.rand()
       ).slice(0, 20);
       pendingRecord.emailAddresses.push({
-        email: 'addedFromRNContacts@example.com',
-        label: 'other'
+        email: "addedFromRNContacts@example.com",
+        label: "other"
       });
-      pendingRecord.phoneNumbers.push({number: "44444", label: 'iPhone'});
-      pendingRecord.thumbnailPath = this.otherImage;//how to test this?
+      pendingRecord.phoneNumbers.push({ number: "44444", label: "iPhone" });
+      pendingRecord.thumbnailPath = this.otherImage; //how to test this?
       pendingRecord.birthday = { year: 1990, month: 1, day: 28 };
-      pendingRecord.note = (
-        originalRecord.note + RNContactsTest.rand()
-      ).slice(0, 2);
-      pendingRecord.urlAddresses.push({url: 'www.jung.com', label: 'home'});
+      pendingRecord.note = (originalRecord.note + RNContactsTest.rand()).slice(
+        0,
+        2
+      );
+      pendingRecord.urlAddresses.push({ url: "www.jung.com", label: "home" });
 
       // TODO - update more fields
 
@@ -102,217 +102,291 @@ export default class RNContactsTest extends Component {
         if (err) throw err;
 
         Contacts.getAll((err, data) => {
-          const updatedRecord = _.find(data, {recordID: originalRecord.recordID});
+          const updatedRecord = _.find(data, {
+            recordID: originalRecord.recordID
+          });
 
-          console.log('original record:', originalRecord);
-          console.log('updated record:', updatedRecord);
+          console.log("original record:", originalRecord);
+          console.log("updated record:", updatedRecord);
 
-          invariant(updatedRecord.familyName !== originalRecord.familyName, 'family name was not updated');
-          invariant(updatedRecord.familyName === pendingRecord.familyName, 'family name was not updated');
-          invariant(updatedRecord.emailAddresses.length === originalRecord.emailAddresses.length + 1, 'Email address array is not length one greater than original record');
-          invariant(updatedRecord.phoneNumbers.length === originalRecord.phoneNumbers.length + 1, 'Email address array is not length one greater than original record');
-          invariant(updatedRecord.birthday.year !== originalRecord.birthday.year, 'birthday year was not updated');
-          invariant(updatedRecord.birthday.year === pendingRecord.birthday.year, 'birthday year was not updated');
-          invariant(updatedRecord.note !== originalRecord.note, 'note was not updated');
-          invariant(updatedRecord.note === pendingRecord.note, 'note was not updated');
-          invariant(updatedRecord.urlAddresses.length === originalRecord.urlAddresses.length + 1, 'Url address array is not length one greater than original record');
-        })
-      })
-    })
-  }
+          invariant(
+            updatedRecord.familyName !== originalRecord.familyName,
+            "family name was not updated"
+          );
+          invariant(
+            updatedRecord.familyName === pendingRecord.familyName,
+            "family name was not updated"
+          );
+          invariant(
+            updatedRecord.emailAddresses.length ===
+              originalRecord.emailAddresses.length + 1,
+            "Email address array is not length one greater than original record"
+          );
+          invariant(
+            updatedRecord.phoneNumbers.length ===
+              originalRecord.phoneNumbers.length + 1,
+            "Email address array is not length one greater than original record"
+          );
+          invariant(
+            updatedRecord.birthday.year !== originalRecord.birthday.year,
+            "birthday year was not updated"
+          );
+          invariant(
+            updatedRecord.birthday.year === pendingRecord.birthday.year,
+            "birthday year was not updated"
+          );
+          invariant(
+            updatedRecord.note !== originalRecord.note,
+            "note was not updated"
+          );
+          invariant(
+            updatedRecord.note === pendingRecord.note,
+            "note was not updated"
+          );
+          invariant(
+            updatedRecord.urlAddresses.length ===
+              originalRecord.urlAddresses.length + 1,
+            "Url address array is not length one greater than original record"
+          );
+        });
+      });
+    });
+  };
 
   addContact = () => {
     const newContact = this._contact();
 
     Contacts.addContact(newContact, (err, addedContact) => {
-      if(!addedContact.recordID) {
+      if (!addedContact.recordID) {
         console.log("Added contact does not have a recordID", addedContact);
       }
 
       Contacts.getAll((err, records) => {
-        const contact = _.find(records, {givenName: newContact.givenName});
+        const contact = _.find(records, { givenName: newContact.givenName });
 
-        console.log('attempted to add:', newContact);
-        console.log('after add:', contact);
+        console.log("attempted to add:", newContact);
+        console.log("after add:", contact);
 
         _.each(newContact, (value, key) => {
-
           const expected = newContact[key];
           const actual = contact[key];
 
-          if (Array.isArray(expected))
-            invariant(expected.length === actual.length, 'contact values !isEqual for ' + key);
-          else if (key === 'thumbnailPath' && Platform.OS === 'ios') {
-            // thumbnailPath will change intentionally as the source url is saved to the contacts db (and then cached in iOS)
+          if (Array.isArray(expected)) {
+            invariant(
+              expected.length === actual.length,
+              "contact values !isEqual for " + key
+            );
+          } else if (key === "thumbnailPath" && Platform.OS === "ios") {
+            // thumbnailPath will change intentionally as the source url is
+            // saved to the contacts db (and then cached in iOS)
           } else {
-            invariant(_.isEqual(expected, actual), 'contact values !isEqual for ' + key + ", expected '" + expected + "' but got '" + actual + "'")
+            invariant(
+              _.isEqual(expected, actual),
+              `contact values !isEqual for ${key}, expected ${expected} but got $'{actual}'`
+            );
           }
-        })
-      })
-    })
-  }
+        });
+      });
+    });
+  };
 
   getContactsMatchingString = () => {
     const newContact = this._contact();
-    console.log('getContactsMatchingString: starting', newContact);
+    console.log("getContactsMatchingString: starting", newContact);
     Contacts.addContact(newContact, (error, addedContact) => {
-      if(!addedContact.recordID) {
+      if (!addedContact.recordID) {
         console.log("Added contact does not have a recordID", addedContact);
       }
-      Contacts.getContactsMatchingString(addedContact.familyName, (err, data) => {
-        if (err)
-          throw err;
-        for (let item of data) {
-          console.log('getContactsMatchingString:', item);
-          if (item.familyName === addedContact.familyName) {
-            invariant(_.isEqual(item.familyName, addedContact.familyName), 'contact returned should match contact added');
-            console.log('getContactsMatchingString:', item);
-            break;
+      Contacts.getContactsMatchingString(
+        addedContact.familyName,
+        (err, data) => {
+          if (err) throw err;
+          for (let item of data) {
+            console.log("getContactsMatchingString:", item);
+            if (item.familyName === addedContact.familyName) {
+              invariant(
+                _.isEqual(item.familyName, addedContact.familyName),
+                "contact returned should match contact added"
+              );
+              console.log("getContactsMatchingString:", item);
+              break;
+            }
           }
         }
-      })
-    })
-  }
+      );
+    });
+  };
 
   deleteContact = () => {
     Contacts.getAll((err, contactsBefore) => {
-      const contactToDelete = _.find(contactsBefore, (contact) => contact.givenName && contact.givenName.indexOf(PREFIX) === 0);
+      const contactToDelete = _.find(
+        contactsBefore,
+        contact => contact.givenName && contact.givenName.indexOf(PREFIX) === 0
+      );
       if (!contactToDelete)
         throw new Error("add a contact before calling delete");
 
-      console.log('attempting to delete', contactToDelete);
+      console.log("attempting to delete", contactToDelete);
 
       Contacts.deleteContact(contactToDelete, (err, data) => {
         Contacts.getAll((err, contactsAfter) => {
-          console.log('resultant list', contactsAfter);
+          console.log("resultant list", contactsAfter);
 
-          invariant(contactsAfter.length === contactsBefore.length - 1, 'getAll should return one less result');
-          invariant(!_.find(contactsAfter, {recordID: contactToDelete.recordID}), 'contact should not longer exist')
-        })
-      })
-    })
-  }
+          invariant(
+            contactsAfter.length === contactsBefore.length - 1,
+            "getAll should return one less result"
+          );
+          invariant(
+            !_.find(contactsAfter, { recordID: contactToDelete.recordID }),
+            "contact should not longer exist"
+          );
+        });
+      });
+    });
+  };
 
   /*
    * loadTest loads many contacts into the address book to see what happens.
    */
   loadTest = () => {
-    console.log("Running load test, please wait...",);
+    console.log("Running load test, please wait...");
     const timer = new Timer();
     console.log("Adding", LOAD_TEST_SIZE, "test contacts");
 
-    this._addContacts(LOAD_TEST_SIZE)
-      .then(() => {
-        console.log("time to add contacts", timer.printTimeSinceLastCheck());
-        Contacts.getAllWithoutPhotos((err, data) => {
-          let toDelete = data.filter((contact) => contact.givenName && contact.givenName.indexOf(PREFIX) === 0);
+    this._addContacts(LOAD_TEST_SIZE).then(() => {
+      console.log("time to add contacts", timer.printTimeSinceLastCheck());
+      Contacts.getAllWithoutPhotos((err, data) => {
+        let toDelete = data.filter(
+          contact =>
+            contact.givenName && contact.givenName.indexOf(PREFIX) === 0
+        );
 
-          if(toDelete.length < LOAD_TEST_SIZE) {
-            console.warn("did not find the expected number of test contacts", toDelete.length, "!==", LOAD_TEST_SIZE);
-          }
+        if (toDelete.length < LOAD_TEST_SIZE) {
+          console.warn(
+            "did not find the expected number of test contacts",
+            toDelete.length,
+            "!==",
+            LOAD_TEST_SIZE
+          );
+        }
 
-          console.log("Found", toDelete.length, "test contacts");
+        console.log("Found", toDelete.length, "test contacts");
+        console.log("Loading", toDelete.length, "contacts");
 
-          console.log("Loading", toDelete.length, "contacts");
+        this._getAll()
+          .then(() => {
+            console.log("time to getAll", timer.printTimeSinceLastCheck());
 
-          this._getAll()
-            .then(() => {
-              console.log("time to getAll", timer.printTimeSinceLastCheck());
+            console.log("Loading contacts without photos");
 
-              console.log("Loading contacts without photos");
+            return this._getAllWithoutPhotos();
+          })
+          .then(() => {
+            console.log(
+              "time to getAllWithoutPhotos",
+              timer.printTimeSinceLastCheck()
+            );
 
-              return this._getAllWithoutPhotos();
-            })
-            .then(() => {
-              console.log("time to getAllWithoutPhotos", timer.printTimeSinceLastCheck());
+            console.log("Loading contacts thumbnails");
 
-              console.log("Loading contacts thumbnails");
+            return this._getAllThumbnails(toDelete.slice());
+          })
+          .then(() => {
+            console.log(
+              "time to get thumbnails",
+              timer.printTimeSinceLastCheck()
+            );
+          })
+          .catch(err => {
+            console.warn("error", err);
+          })
+          .then(() => {
+            console.log("Deleting", toDelete.length, "contacts");
 
-              return this._getAllThumbnails(toDelete.slice());
-            })
-            .then(() => {
-              console.log("time to get thumbnails", timer.printTimeSinceLastCheck());
-            })
-            .catch((err) => {
-              console.warn("error", err);
-            })
-            .then(() => {
-              console.log("Deleting", toDelete.length, "contacts");
+            return this._deleteAll(toDelete);
+          })
+          .then(() => {
+            console.log(
+              "time to delete contacts",
+              timer.printTimeSinceLastCheck()
+            );
+          });
+      });
+    });
+  };
 
-              return this._deleteAll(toDelete);
-            })
-            .then(() => {
-              console.log("time to delete contacts", timer.printTimeSinceLastCheck());
-            });
-        });
-      })
-  }
-
-  _addContacts = (size) => {
+  _addContacts = size => {
     const work = [];
 
     for (let i = 0; i < size; i++) {
-      work.push(new Promise((fulfill, reject) => {
-        Contacts.addContact(this._contact(), (err, res) => {
-          console.log("Added contact", i, res);
-          fulfill();
+      work.push(
+        new Promise((fulfill, reject) => {
+          Contacts.addContact(this._contact(), (err, res) => {
+            console.log("Added contact", i, res);
+            fulfill();
+          });
         })
-      }));
+      );
     }
 
     return RNContactsTest._execute(work);
-  }
+  };
 
   _getAll = () => {
-    return new Promise(function (fulfill, reject) {
+    return new Promise(function(fulfill, reject) {
       Contacts.getAll((err, data) => {
         fulfill();
       });
     });
-  }
+  };
 
   _getAllWithoutPhotos = () => {
-    return new Promise(function (fulfill, reject) {
+    return new Promise(function(fulfill, reject) {
       Contacts.getAllWithoutPhotos((err, data) => {
         fulfill();
       });
     });
-  }
+  };
 
-  _getAllThumbnails = (contacts) => {
-    const work = contacts.map((contact) => new Promise(function (fulfill, reject) {
-      Contacts.getPhotoForId(contact.recordID, (err, icon) => {
-        fulfill();
-      });
-    }));
-
-    return RNContactsTest._execute(work);
-  }
-
-  _deleteAll = (contacts) => {
-    const work = contacts.map((contact) => new Promise(function (fulfill, reject) {
-      Contacts.deleteContact(contact, (err, icon) => {
-        fulfill();
-      });
-    }));
+  _getAllThumbnails = contacts => {
+    const work = contacts.map(
+      contact =>
+        new Promise(function(fulfill, reject) {
+          Contacts.getPhotoForId(contact.recordID, (err, icon) => {
+            fulfill();
+          });
+        })
+    );
 
     return RNContactsTest._execute(work);
-  }
+  };
 
-  static _execute = (promises) => {
+  _deleteAll = contacts => {
+    const work = contacts.map(
+      contact =>
+        new Promise(function(fulfill, reject) {
+          Contacts.deleteContact(contact, (err, icon) => {
+            fulfill();
+          });
+        })
+    );
+
+    return RNContactsTest._execute(work);
+  };
+
+  static _execute = promises => {
     if (promises.length === 0) {
       return Promise.resolve();
     } else {
-      return Promise.resolve(promises.pop())
-        .then(() => {
-          return RNContactsTest._execute(promises);
-        });
+      return Promise.resolve(promises.pop()).then(() => {
+        return RNContactsTest._execute(promises);
+      });
     }
-  }
+  };
 
   static rand = () => {
     return Math.floor(Math.random() * 99999999);
-  }
+  };
 
   getPhotosFromCameraRoll = (count, after) => {
     const fetchParams = {
@@ -333,7 +407,7 @@ export default class RNContactsTest extends Component {
     console.log("Loading photos from camera roll", count);
 
     return CameraRoll.getPhotos(fetchParams);
-  }
+  };
 
   _contact = () => {
     return {
@@ -343,24 +417,24 @@ export default class RNContactsTest extends Component {
       jobTitle: PREFIX + "jobTitle" + RNContactsTest.rand(),
       company: PREFIX + "company" + RNContactsTest.rand(),
       emailAddresses: [
-        {email: PREFIX + '1@example.com', label: 'work'},
-        {email: PREFIX + '2@example.com', label: 'personal'}
+        { email: PREFIX + "1@example.com", label: "work" },
+        { email: PREFIX + "2@example.com", label: "personal" }
       ],
       postalAddresses: [
         {
-          street: '123 Fake Street',
-          city: 'Sample City',
-          state: 'CA',
-          region: 'CA',
-          postCode: '90210',
-          country: 'USA',
-          label: 'home'
+          street: "123 Fake Street",
+          city: "Sample City",
+          state: "CA",
+          region: "CA",
+          postCode: "90210",
+          country: "USA",
+          label: "home"
         }
       ],
       phoneNumbers: [
-        {number: "11111", label: 'main'},
-        {number: "22222", label: 'mobile'},
-        {number: "33333", label: 'home'},
+        { number: "11111", label: "main" },
+        { number: "22222", label: "mobile" },
+        { number: "33333", label: "home" }
       ],
       thumbnailPath: this.defaultImage,
       birthday: {
@@ -370,18 +444,23 @@ export default class RNContactsTest extends Component {
       },
       note: PREFIX + "note" + RNContactsTest.rand(),
       urlAddresses: [
-        {url: PREFIX + 'www.google.com', label: 'homepage'},
-        {url: PREFIX + 'www.jung.com', label: 'home'}
+        { url: PREFIX + "www.google.com", label: "homepage" },
+        { url: PREFIX + "www.jung.com", label: "home" }
       ]
     };
-  }
+  };
 
   renderAndroidRequestPermissions = () => {
     if (Platform.OS === "android") {
-      return <Button text="request android contacts permissions" onPress={this.requestAndroidPermissions}/>
+      return (
+        <Button
+          text="request android contacts permissions"
+          onPress={this.requestAndroidPermissions}
+        />
+      );
     }
     return null;
-  }
+  };
 
   componentDidMount() {
     this._getContacts();
@@ -389,9 +468,9 @@ export default class RNContactsTest extends Component {
 
   _getContacts = () => {
     Contacts.getAll((err, contacts) => {
-      this.setState({contacts});
+      this.setState({ contacts });
     });
-  }
+  };
 
   render() {
     const { contacts } = this.state;
@@ -400,15 +479,23 @@ export default class RNContactsTest extends Component {
       <View style={styles.container}>
         {/*contacts &&
           contacts.map(c => <Text key={c.recordID}>{c.givenName}</Text>)*/}
-        <Text style={styles.hello}>All results are are written to console.log</Text>
+        <Text style={styles.hello}>
+          All results are are written to console.log
+        </Text>
         {/*this.renderAndroidRequestPermissions()*/}
-        <Button text="get all contacts" onPress={this.getAll}/>
-        <Button text="get all contacts (without photos)" onPress={this.getAllWithoutPhotos}/>
-        <Button text="get contacts matching string" onPress={this.getContactsMatchingString}/>
-        <Button text="getPhotoForId" onPress={this.getPhotoForId}/>
-        <Button text="add contact" onPress={this.addContact}/>
-        <Button text="update contact" onPress={this.updateContact}/>
-        <Button text="delete contact" onPress={this.deleteContact}/>
+        <Button text="get all contacts" onPress={this.getAll} />
+        <Button
+          text="get all contacts (without photos)"
+          onPress={this.getAllWithoutPhotos}
+        />
+        <Button
+          text="get contacts matching string"
+          onPress={this.getContactsMatchingString}
+        />
+        <Button text="getPhotoForId" onPress={this.getPhotoForId} />
+        <Button text="add contact" onPress={this.addContact} />
+        <Button text="update contact" onPress={this.updateContact} />
+        <Button text="delete contact" onPress={this.deleteContact} />
         <Button
           text={"performance test (" + LOAD_TEST_SIZE + " contacts)"}
           onPress={this.loadTest}
@@ -421,8 +508,8 @@ export default class RNContactsTest extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5FCFF"
+  }
 });
