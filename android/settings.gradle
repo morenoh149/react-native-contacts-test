@@ -1,4 +1,4 @@
-rootProject.name = 'RNContactsTest'
+rootProject.name = 'reactNativeContactsTest'
 include ':react-native-contacts'
 project(':react-native-contacts').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-contacts/android')
 
