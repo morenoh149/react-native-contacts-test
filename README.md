@@ -40,3 +40,4 @@ run `npm install`. Then follow regular instructions for installing above.
 
 - TextInput to test `get with options`
 - TextInput to test `groups`
+- use https://github.com/marak/Faker.js/ to quickly load an emulator with sample contacts.
