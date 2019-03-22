@@ -5,11 +5,10 @@ An integration test for [react-native-contacts](https://github.com/rt2zz/react-n
 ## Install
 
 - `yarn install`
-- `react-native link react-native-contacts`
-- add platform specific permissions configuration. See readme for react-native-contacts.
-- add permissions for CameraRoll on ios. See
-  [CameraRoll permissions](https://facebook.github.io/react-native/docs/cameraroll.html#permissions)
-  and [Adding Camera Roll to an ios project in React Native](https://www.youtube.com/watch?v=e3ReNbQu79c).
+- If you have issues when running double check installation of react-native-contacts.
+- `open ios/reactNativeContactsTest.xcodeproj`
+- Add permissions for CameraRoll on ios and link the library. See
+  [Adding Camera Roll to an ios project in React Native](https://www.youtube.com/watch?v=e3ReNbQu79c).
 
 ## Running
 

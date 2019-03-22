@@ -15,13 +15,13 @@ const LOAD_TEST_SIZE = 10000;
 
 export default class RNContactsTest extends Component {
   componentWillMount() {
-    /*
-    this.getPhotosFromCameraRoll(2)
-      .then((data) => {
+    this.getPhotosFromCameraRoll(2).then(data => {
+      console.log("cwm", data);
+      if (data.edges.length > 0) {
         self.defaultImage = data.edges[0].node.image.uri;
         self.otherImage = data.edges[1].node.image.uri;
-      });
-      */
+      }
+    });
   }
 
   /*
@@ -408,17 +408,12 @@ export default class RNContactsTest extends Component {
   getPhotosFromCameraRoll = (count, after) => {
     const fetchParams = {
       first: count,
-      groupTypes: "SavedPhotos",
       assetType: "Photos"
     };
     if (after) {
       fetchParams.after = after;
     }
-    if (Platform.OS === "android") {
-      // not supported in android
-      delete fetchParams.groupTypes;
-    }
-    console.log("Loading photos from camera roll", count);
+    console.log("Loading photos from camera roll", fetchParams);
     return CameraRoll.getPhotos(fetchParams);
   };
 
