@@ -1,3 +1,6 @@
+/*
+ * Timer is a helper object that tracks time elapsed. It is stateful.
+ */
 export default class Timer {
   constructor() {
     this._startTime = new Date();

@@ -29,9 +29,9 @@ An integration test for [react-native-contacts](https://github.com/rt2zz/react-n
 
 We use this repo to test changes in [react-native-contacts](https://github.com/rt2zz/react-native-contacts). To test PRs update the dependency in your copy
 
-```js
-// package.json
+In `package.json`
 
+```js
 "react-native-contacts": "username/react-native-contacts#branch-name"
 ```
 

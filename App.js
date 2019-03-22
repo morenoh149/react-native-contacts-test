@@ -1,17 +1,19 @@
 import React, { Component } from "react";
-import { Alert, Platform, StyleSheet, Text, View } from "react-native";
-import Button from "./Button";
+import {
+  Button,
+  CameraRoll,
+  Platform,
+  StyleSheet,
+  Text,
+  View
+} from "react-native";
 import Contacts from "react-native-contacts";
 import Timer from "./timer";
 
 const PREFIX = "ReactNativeContacts__";
-const LOAD_TEST_SIZE = 4000;
+const LOAD_TEST_SIZE = 10000;
 
 export default class RNContactsTest extends Component {
-  state = {
-    contacts: []
-  };
-
   componentWillMount() {
     /*
     this.getPhotosFromCameraRoll(2)
@@ -19,37 +21,53 @@ export default class RNContactsTest extends Component {
         self.defaultImage = data.edges[0].node.image.uri;
         self.otherImage = data.edges[1].node.image.uri;
       });
-*/
+      */
   }
 
+  /*
+   * getAll reads all of the phone contacts and logs the count.
+   */
   getAll = () => {
+    console.log("getAll: ...");
     Contacts.getAll((err, data) => {
-      if (err) throw err;
+      if (err) {
+        throw err;
+      }
 
-      if (data.length > 50) {
-        console.log(`getAll: ${data.length}`);
+      if (data.length > 20) {
+        console.log("getAll:", data.length);
       } else {
         data.forEach(contact => console.log("getAll:", contact));
       }
     });
   };
 
+  /*
+   * getAllWithoutPhotos reads all contacts that don't have a photo and logs
+   * the count.
+   */
   getAllWithoutPhotos = () => {
+    console.log("getAllWithoutPhotos: ...");
     Contacts.getAllWithoutPhotos((err, data) => {
-      if (err) throw err;
+      if (err) {
+        throw err;
+      }
 
-      for (let item of data) {
-        console.log("getAllWithoutPhotos:", item);
+      if (data.length > 20) {
+        console.log("getAllWithoutPhotos:", data.length);
+      } else {
+        data.forEach(contact => console.log("getAllWithoutPhotos:", contact));
       }
     });
   };
 
   getPhotoForId = () => {
     Contacts.getAllWithoutPhotos((err, data) => {
-      if (err) throw err;
+      if (err) {
+        throw err;
+      }
 
       const item = data.filter(item => item.hasThumbnail)[0];
-
       Contacts.getPhotoForId(item.recordID, (err, icon) => {
         if (err) {
           console.warn("error getting photo", err);
@@ -76,8 +94,9 @@ export default class RNContactsTest extends Component {
         data,
         contact => contact.givenName && contact.givenName.indexOf(PREFIX) === 0
       );
-      if (!originalRecord)
+      if (!originalRecord) {
         throw new Error("add a contact before calling delete");
+      }
 
       const pendingRecord = _.cloneDeep(originalRecord);
       pendingRecord.familyName = (
@@ -99,55 +118,58 @@ export default class RNContactsTest extends Component {
       // TODO - update more fields
 
       Contacts.updateContact(pendingRecord, (err, data) => {
-        if (err) throw err;
+        if (err) {
+          throw err;
+        }
 
         Contacts.getAll((err, data) => {
           const updatedRecord = _.find(data, {
             recordID: originalRecord.recordID
           });
-
           console.log("original record:", originalRecord);
           console.log("updated record:", updatedRecord);
-
-          invariant(
-            updatedRecord.familyName !== originalRecord.familyName,
-            "family name was not updated"
-          );
-          invariant(
-            updatedRecord.familyName === pendingRecord.familyName,
-            "family name was not updated"
-          );
-          invariant(
+          if (updatedRecord.familyName !== originalRecord.familyName) {
+            console.error("family name was not updated");
+          }
+          if (updatedRecord.familyName === pendingRecord.familyName) {
+            console.error("family name was not updated");
+          }
+          if (
             updatedRecord.emailAddresses.length ===
-              originalRecord.emailAddresses.length + 1,
-            "Email address array is not length one greater than original record"
-          );
-          invariant(
+            originalRecord.emailAddresses.length + 1
+          ) {
+            console.error(
+              "Email address array is not length one greater than original record"
+            );
+          }
+          if (
             updatedRecord.phoneNumbers.length ===
-              originalRecord.phoneNumbers.length + 1,
-            "Email address array is not length one greater than original record"
-          );
-          invariant(
-            updatedRecord.birthday.year !== originalRecord.birthday.year,
-            "birthday year was not updated"
-          );
-          invariant(
-            updatedRecord.birthday.year === pendingRecord.birthday.year,
-            "birthday year was not updated"
-          );
-          invariant(
-            updatedRecord.note !== originalRecord.note,
-            "note was not updated"
-          );
-          invariant(
-            updatedRecord.note === pendingRecord.note,
-            "note was not updated"
-          );
-          invariant(
+            originalRecord.phoneNumbers.length + 1
+          ) {
+            console.error(
+              "Email address array is not length one greater than original record"
+            );
+          }
+          if (updatedRecord.birthday.year !== originalRecord.birthday.year) {
+            console.error("birthday year was not updated");
+          }
+          if (updatedRecord.birthday.year === pendingRecord.birthday.year) {
+            console.error("birthday year was not updated");
+          }
+          if (updatedRecord.note !== originalRecord.note) {
+            console.error("note was not updated");
+          }
+          if (updatedRecord.note === pendingRecord.note) {
+            console.error("note was not updated");
+          }
+          if (
             updatedRecord.urlAddresses.length ===
-              originalRecord.urlAddresses.length + 1,
-            "Url address array is not length one greater than original record"
-          );
+            originalRecord.urlAddresses.length + 1
+          ) {
+            console.error(
+              "Url address array is not length one greater than original record"
+            );
+          }
         });
       });
     });
@@ -163,33 +185,35 @@ export default class RNContactsTest extends Component {
 
       Contacts.getAll((err, records) => {
         const contact = _.find(records, { givenName: newContact.givenName });
-
         console.log("attempted to add:", newContact);
         console.log("after add:", contact);
-
         _.each(newContact, (value, key) => {
           const expected = newContact[key];
           const actual = contact[key];
 
           if (Array.isArray(expected)) {
-            invariant(
-              expected.length === actual.length,
-              "contact values !isEqual for " + key
-            );
+            if (expected.length === actual.length) {
+              console.error(`contact values !isEqual for ${key}`);
+            }
           } else if (key === "thumbnailPath" && Platform.OS === "ios") {
             // thumbnailPath will change intentionally as the source url is
             // saved to the contacts db (and then cached in iOS)
           } else {
-            invariant(
-              _.isEqual(expected, actual),
-              `contact values !isEqual for ${key}, expected ${expected} but got $'{actual}'`
-            );
+            if (_.isEqual(expected, actual)) {
+              console.error(
+                `contact values !isEqual for ${key}, expected ${expected} but got $'{actual}'`
+              );
+            }
           }
         });
       });
     });
   };
 
+  /*
+   * getContactsMacthinString makes a new contact and tests we can read it by
+   * the contact's name.
+   */
   getContactsMatchingString = () => {
     const newContact = this._contact();
     console.log("getContactsMatchingString: starting", newContact);
@@ -200,15 +224,18 @@ export default class RNContactsTest extends Component {
       Contacts.getContactsMatchingString(
         addedContact.familyName,
         (err, data) => {
-          if (err) throw err;
-          for (let item of data) {
+          if (err) {
+            throw err;
+          }
+          for (let i = 0; i < data.length; i++) {
+            const item = data[i];
             console.log("getContactsMatchingString:", item);
-            if (item.familyName === addedContact.familyName) {
-              invariant(
-                _.isEqual(item.familyName, addedContact.familyName),
-                "contact returned should match contact added"
+            if (item.familyName != addedContact.familyName) {
+              console.error(
+                "contact returned should match contact added. Got",
+                item.familyName,
+                addedContact.familyName
               );
-              console.log("getContactsMatchingString:", item);
               break;
             }
           }
@@ -223,23 +250,20 @@ export default class RNContactsTest extends Component {
         contactsBefore,
         contact => contact.givenName && contact.givenName.indexOf(PREFIX) === 0
       );
-      if (!contactToDelete)
+      if (!contactToDelete) {
         throw new Error("add a contact before calling delete");
-
+      }
       console.log("attempting to delete", contactToDelete);
-
       Contacts.deleteContact(contactToDelete, (err, data) => {
         Contacts.getAll((err, contactsAfter) => {
           console.log("resultant list", contactsAfter);
 
-          invariant(
-            contactsAfter.length === contactsBefore.length - 1,
-            "getAll should return one less result"
-          );
-          invariant(
-            !_.find(contactsAfter, { recordID: contactToDelete.recordID }),
-            "contact should not longer exist"
-          );
+          if (contactsAfter.length === contactsBefore.length - 1) {
+            console.error("getAll should return one less result");
+          }
+          if (!_.find(contactsAfter, { recordID: contactToDelete.recordID })) {
+            console.error("contact should not longer exist");
+          }
         });
       });
     });
@@ -249,9 +273,8 @@ export default class RNContactsTest extends Component {
    * loadTest loads many contacts into the address book to see what happens.
    */
   loadTest = () => {
-    console.log("Running load test, please wait...");
     const timer = new Timer();
-    console.log("Adding", LOAD_TEST_SIZE, "test contacts");
+    console.log(`loadTest: Adding ${LOAD_TEST_SIZE} test contacts`);
 
     this._addContacts(LOAD_TEST_SIZE).then(() => {
       console.log("time to add contacts", timer.printTimeSinceLastCheck());
@@ -263,7 +286,7 @@ export default class RNContactsTest extends Component {
 
         if (toDelete.length < LOAD_TEST_SIZE) {
           console.warn(
-            "did not find the expected number of test contacts",
+            "did not find the expected number of test contacts.",
             toDelete.length,
             "!==",
             LOAD_TEST_SIZE
@@ -272,13 +295,10 @@ export default class RNContactsTest extends Component {
 
         console.log("Found", toDelete.length, "test contacts");
         console.log("Loading", toDelete.length, "contacts");
-
         this._getAll()
           .then(() => {
             console.log("time to getAll", timer.printTimeSinceLastCheck());
-
             console.log("Loading contacts without photos");
-
             return this._getAllWithoutPhotos();
           })
           .then(() => {
@@ -286,9 +306,7 @@ export default class RNContactsTest extends Component {
               "time to getAllWithoutPhotos",
               timer.printTimeSinceLastCheck()
             );
-
             console.log("Loading contacts thumbnails");
-
             return this._getAllThumbnails(toDelete.slice());
           })
           .then(() => {
@@ -302,7 +320,6 @@ export default class RNContactsTest extends Component {
           })
           .then(() => {
             console.log("Deleting", toDelete.length, "contacts");
-
             return this._deleteAll(toDelete);
           })
           .then(() => {
@@ -322,7 +339,9 @@ export default class RNContactsTest extends Component {
       work.push(
         new Promise((fulfill, reject) => {
           Contacts.addContact(this._contact(), (err, res) => {
-            console.log("Added contact", i, res);
+            if (i % 100 === 0) {
+              console.log("Added contact", i, res);
+            }
             fulfill();
           });
         })
@@ -357,7 +376,6 @@ export default class RNContactsTest extends Component {
           });
         })
     );
-
     return RNContactsTest._execute(work);
   };
 
@@ -370,7 +388,6 @@ export default class RNContactsTest extends Component {
           });
         })
     );
-
     return RNContactsTest._execute(work);
   };
 
@@ -394,31 +411,27 @@ export default class RNContactsTest extends Component {
       groupTypes: "SavedPhotos",
       assetType: "Photos"
     };
-
     if (after) {
       fetchParams.after = after;
     }
-
     if (Platform.OS === "android") {
       // not supported in android
       delete fetchParams.groupTypes;
     }
-
     console.log("Loading photos from camera roll", count);
-
     return CameraRoll.getPhotos(fetchParams);
   };
 
   _contact = () => {
     return {
-      givenName: PREFIX + "givenName" + RNContactsTest.rand(),
-      familyName: PREFIX + "familyName" + RNContactsTest.rand(),
-      middleName: PREFIX + "middleName" + RNContactsTest.rand(),
-      jobTitle: PREFIX + "jobTitle" + RNContactsTest.rand(),
-      company: PREFIX + "company" + RNContactsTest.rand(),
+      givenName: `${PREFIX}givenName${RNContactsTest.rand()}`,
+      familyName: `${PREFIX}familyName${RNContactsTest.rand()}`,
+      middleName: `${PREFIX}middleName${RNContactsTest.rand()}`,
+      jobTitle: `${PREFIX}jobTitle${RNContactsTest.rand()}`,
+      company: `${PREFIX}company${RNContactsTest.rand()}`,
       emailAddresses: [
-        { email: PREFIX + "1@example.com", label: "work" },
-        { email: PREFIX + "2@example.com", label: "personal" }
+        { email: `${PREFIX}1@example.com`, label: "work" },
+        { email: `${PREFIX}2@example.com`, label: "personal" }
       ],
       postalAddresses: [
         {
@@ -442,10 +455,10 @@ export default class RNContactsTest extends Component {
         month: 0,
         year: 1987
       },
-      note: PREFIX + "note" + RNContactsTest.rand(),
+      note: `${PREFIX}note${RNContactsTest.rand()}`,
       urlAddresses: [
-        { url: PREFIX + "www.google.com", label: "homepage" },
-        { url: PREFIX + "www.jung.com", label: "home" }
+        { url: `${PREFIX}www.google.com`, label: "homepage" },
+        { url: `${PREFIX}www.jung.com`, label: "home" }
       ]
     };
   };
@@ -454,7 +467,7 @@ export default class RNContactsTest extends Component {
     if (Platform.OS === "android") {
       return (
         <Button
-          text="request android contacts permissions"
+          title="request android contacts permissions"
           onPress={this.requestAndroidPermissions}
         />
       );
@@ -462,42 +475,28 @@ export default class RNContactsTest extends Component {
     return null;
   };
 
-  componentDidMount() {
-    this._getContacts();
-  }
-
-  _getContacts = () => {
-    Contacts.getAll((err, contacts) => {
-      this.setState({ contacts });
-    });
-  };
-
   render() {
-    const { contacts } = this.state;
-
     return (
       <View style={styles.container}>
-        {/*contacts &&
-          contacts.map(c => <Text key={c.recordID}>{c.givenName}</Text>)*/}
         <Text style={styles.hello}>
           All results are are written to console.log
         </Text>
         {/*this.renderAndroidRequestPermissions()*/}
-        <Button text="get all contacts" onPress={this.getAll} />
+        <Button title="get all contacts" onPress={this.getAll} />
         <Button
-          text="get all contacts (without photos)"
+          title="get all contacts (without photos)"
           onPress={this.getAllWithoutPhotos}
         />
         <Button
-          text="get contacts matching string"
+          title="get contacts matching string"
           onPress={this.getContactsMatchingString}
         />
-        <Button text="getPhotoForId" onPress={this.getPhotoForId} />
-        <Button text="add contact" onPress={this.addContact} />
-        <Button text="update contact" onPress={this.updateContact} />
-        <Button text="delete contact" onPress={this.deleteContact} />
+        <Button title="getPhotoForId" onPress={this.getPhotoForId} />
+        <Button title="add contact" onPress={this.addContact} />
+        <Button title="update contact" onPress={this.updateContact} />
+        <Button title="delete contact" onPress={this.deleteContact} />
         <Button
-          text={"performance test (" + LOAD_TEST_SIZE + " contacts)"}
+          title={`performance test (${LOAD_TEST_SIZE} contacts)`}
           onPress={this.loadTest}
         />
       </View>
