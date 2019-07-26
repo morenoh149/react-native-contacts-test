@@ -244,6 +244,25 @@ export default class RNContactsTest extends Component {
     });
   };
 
+  getContactsByPhoneNumber = () => {
+    const newContact = this._contact();
+    console.log("getContactsByPhoneNumber: starting", newContact);
+    Contacts.addContact(newContact, (error, addedContact) => {
+      Contacts.getContactsByPhoneNumber(
+        addedContact.phoneNumbers[0].number,
+        (err, data) => {
+          if (err) {
+            throw err;
+          }
+          for (let i = 0; i < data.length; i++) {
+            const item = data[i];
+            console.log("getContactsByPhoneNumber:", item);
+          }
+        }
+      );
+    });
+  };
+
   deleteContact = () => {
     Contacts.getAll((err, contactsBefore) => {
       const contactToDelete = _.find(
@@ -486,6 +505,12 @@ export default class RNContactsTest extends Component {
           title="get contacts matching string"
           onPress={this.getContactsMatchingString}
         />
+
+        <Button
+          title="get contacts by phone number"
+          onPress={this.getContactsByPhoneNumber}
+        />
+
         <Button title="getPhotoForId" onPress={this.getPhotoForId} />
         <Button title="add contact" onPress={this.addContact} />
         <Button title="update contact" onPress={this.updateContact} />

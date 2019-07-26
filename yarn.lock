@@ -4995,10 +4995,9 @@ react-is@^16.8.1, react-is@^16.8.3, react-is@^16.8.4:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.8.4.tgz#90f336a68c3a29a096a3d648ab80e87ec61482a2"
   integrity sha512-PVadd+WaUDOAciICm/J1waJaSvgq+4rHE/K70j0PFqKhkTBsPv/82UGQJNXAngz1fOQLLxI6z1sEDmJDQhCTAA==
 
-react-native-contacts@^3.1.4:
-  version "3.1.4"
-  resolved "https://registry.yarnpkg.com/react-native-contacts/-/react-native-contacts-3.1.4.tgz#9db6e39c319f4960182e273ce48e8f8db7e5f799"
-  integrity sha512-6R2hexlmmQWLa7EiSco4e//GcY2lYRMRACRC1okKwB2ApbPoDnPAo61bNjp+zIKcMF8eBsjCh0rSqPlD6wI6yg==
+"react-native-contacts@https://github.com/hatemalimam/react-native-contacts.git#feature/getContactsByPhoneNumber":
+  version "5.0.2"
+  resolved "https://github.com/hatemalimam/react-native-contacts.git#804303f141d6f83903c9e4373929d938dc75647f"
 
 react-native@0.59.1:
   version "0.59.1"

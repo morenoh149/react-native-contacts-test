@@ -14,7 +14,7 @@
   "dependencies": {
     "react": "16.8.3",
     "react-native": "0.59.1",
-    "react-native-contacts": "^3.1.4"
+    "react-native-contacts": "https://github.com/hatemalimam/react-native-contacts.git#feature/getContactsByPhoneNumber"
   },
   "devDependencies": {
     "@babel/core": "^7.4.0",
