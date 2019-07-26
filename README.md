@@ -1,3 +1,5 @@
+_Deprecated_ please use the example in the module to test features https://github.com/rt2zz/react-native-contacts/tree/master/example
+
 # react-native-contacts-test
 
 An integration test for [react-native-contacts](https://github.com/rt2zz/react-native-contacts).
